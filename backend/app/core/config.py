@@ -14,6 +14,7 @@ class Settings(BaseSettings):
 
     # Gemini
     GOOGLE_API_KEY: str = ""
+    USER_AGENT: str = "MarketPulseApp"
 
     class Config:
         case_sensitive = True

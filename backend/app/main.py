@@ -1,7 +1,11 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.endpoints import router as api_router
 from app.core.config import settings
+
+# Set USER_AGENT for LangChain tools
+os.environ["USER_AGENT"] = settings.USER_AGENT
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
