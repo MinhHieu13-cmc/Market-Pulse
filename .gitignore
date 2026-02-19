@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+.env
+.env.*
+!.env.example
+*.log
+
+# Node
+node_modules/
+.next/
+out/
+build/
+dist/
+.DS_Store
+*.local
+
+# Docker
+.dockerignore
+# Nhưng nên giữ Dockerfile và docker-compose.yml
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Project specific
+test_extract_text.py
+backend/.env
+frontend/.env
