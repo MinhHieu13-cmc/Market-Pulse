@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Any
-from langchain_classic.agents import AgentExecutor
-from langchain_classic.agents import create_tool_calling_agent
+from langchain_classic.agents import AgentExecutor, create_tool_calling_agent
 from langchain_core.prompts import ChatPromptTemplate
 
 class BaseSkill(ABC):
@@ -27,6 +26,10 @@ class BaseSkill(ABC):
             verbose=True,
             handle_parsing_errors=True
         )
+
+    async def astream_events(self, input_data: dict):
+        async for event in self.executor.astream_events(input_data, version="v2"):
+            yield event
 
     async def execute(self, input_data: dict) -> str:
         response = await self.executor.ainvoke(input_data)

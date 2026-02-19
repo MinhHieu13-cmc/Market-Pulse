@@ -23,9 +23,20 @@ export default function Home() {
     setIsLoading(true);
 
     try {
-      const response = await chatService.sendMessage(text);
-      const aiMsg: Message = { id: Date.now() + 1, text: response.response, isAi: true };
+      // Add a placeholder AI message
+      const aiMsgId = Date.now() + 1;
+      const aiMsg: Message = { id: aiMsgId, text: "", isAi: true };
       setMessages(prev => [...prev, aiMsg]);
+
+      let fullText = "";
+      for await (const chunk of chatService.streamMessage(text)) {
+        fullText += chunk;
+        setMessages(prev => 
+          prev.map(msg => 
+            msg.id === aiMsgId ? { ...msg, text: fullText } : msg
+          )
+        );
+      }
     } catch (error) {
       console.error("Failed to send message:", error);
       const errorMsg: Message = { 
