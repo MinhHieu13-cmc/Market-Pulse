@@ -8,12 +8,14 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        chatgpt: {
-          sidebar: "#202123",
-          main: "#343541",
-          input: "#40414f",
-          user: "#343541",
-          ai: "#444654",
+        fintech: {
+          bg: '#0f172a',
+          sidebar: '#020617',
+          card: '#1e293b',
+          input: '#1e293b',
+          up: '#22c55e',
+          down: '#ef4444',
+          accent: '#3b82f6'
         }
       }
     },

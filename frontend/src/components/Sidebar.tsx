@@ -1,42 +1,65 @@
 import React from 'react';
-import { Plus, MessageSquare, LogOut, Settings } from 'lucide-react';
+import { Plus, MessageSquare, BarChart2, Bitcoin, DollarSign, Activity, Settings, LogOut } from 'lucide-react';
 
 const Sidebar = () => {
   return (
-    <aside className="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0 bg-chatgpt-sidebar flex flex-col p-2 text-white">
-      <div className="flex items-center justify-between p-2 mb-4">
-        <div className="flex items-center space-x-2 font-bold text-xl">
-          <div className="w-8 h-8 bg-emerald-500 rounded-sm flex items-center justify-center text-white">
-            M
+    <aside className="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0 bg-fintech-sidebar flex flex-col border-r border-slate-800 text-slate-300">
+      <div className="p-6">
+        <div className="flex items-center space-x-3 mb-8">
+          <div className="w-8 h-8 bg-fintech-accent rounded-lg flex items-center justify-center">
+            <Activity className="text-white" size={20} />
           </div>
-          <span>Market Pulse</span>
+          <h1 className="text-white font-bold text-lg tracking-tight">Market Pulse AI</h1>
         </div>
-      </div>
 
-      <button className="flex items-center space-x-3 w-full p-3 mb-2 border border-white/20 rounded-md hover:bg-white/10 transition-colors text-sm">
-        <Plus size={16} />
-        <span>New Chat</span>
-      </button>
-
-      <div className="flex-1 overflow-y-auto space-y-1">
-        <div className="p-3 flex items-center space-x-3 rounded-md bg-white/10 cursor-pointer text-sm">
-          <MessageSquare size={16} />
-          <span className="truncate">Thị trường Bitcoin hôm nay...</span>
-        </div>
-        <div className="p-3 flex items-center space-x-3 rounded-md hover:bg-white/5 cursor-pointer text-sm text-gray-300">
-          <MessageSquare size={16} />
-          <span className="truncate">Phân tích cổ phiếu AAPL</span>
-        </div>
-      </div>
-
-      <div className="mt-auto border-t border-white/20 pt-2 space-y-1">
-        <button className="flex items-center space-x-3 w-full p-3 rounded-md hover:bg-white/10 transition-colors text-sm">
-          <Settings size={16} />
-          <span>Settings</span>
+        <button className="w-full flex items-center justify-center space-x-2 bg-fintech-accent hover:bg-blue-600 text-white py-2.5 px-4 rounded-xl transition-all font-medium shadow-lg shadow-blue-900/20">
+          <Plus size={18} />
+          <span>New Analysis</span>
         </button>
-        <button className="flex items-center space-x-3 w-full p-3 rounded-md hover:bg-white/10 transition-colors text-sm">
+      </div>
+
+      <div className="flex-1 overflow-y-auto px-4 space-y-6 custom-scrollbar">
+        <div>
+          <h3 className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-3 px-2">Quick Filters</h3>
+          <div className="space-y-1">
+            <button className="w-full flex items-center space-x-3 text-slate-400 hover:bg-slate-800/50 hover:text-white py-2 px-3 rounded-lg transition-all group">
+              <Bitcoin size={16} className="group-hover:text-fintech-up" />
+              <span className="text-sm font-medium">Crypto</span>
+            </button>
+            <button className="w-full flex items-center space-x-3 text-slate-400 hover:bg-slate-800/50 hover:text-white py-2 px-3 rounded-lg transition-all group">
+              <BarChart2 size={16} className="group-hover:text-fintech-accent" />
+              <span className="text-sm font-medium">Stocks</span>
+            </button>
+            <button className="w-full flex items-center space-x-3 text-slate-400 hover:bg-slate-800/50 hover:text-white py-2 px-3 rounded-lg transition-all group">
+              <DollarSign size={16} className="group-hover:text-yellow-500" />
+              <span className="text-sm font-medium">Forex</span>
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-3 px-2">Recent Analysis</h3>
+          <div className="space-y-1">
+            <button className="w-full flex items-center space-x-3 text-white bg-slate-800/50 py-2 px-3 rounded-lg text-left truncate">
+              <MessageSquare size={16} className="text-fintech-accent shrink-0" />
+              <span className="text-sm truncate">BTC Trend Prediction</span>
+            </button>
+            <button className="w-full flex items-center space-x-3 text-slate-400 hover:bg-slate-800/50 hover:text-white py-2 px-3 rounded-lg text-left truncate group">
+              <MessageSquare size={16} className="group-hover:text-fintech-accent shrink-0" />
+              <span className="text-sm truncate">VNIndex Overview</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="p-4 border-t border-slate-800 space-y-1">
+        <button className="w-full flex items-center space-x-3 text-slate-400 hover:bg-slate-800/50 hover:text-white py-2 px-3 rounded-lg transition-all">
+          <Settings size={16} />
+          <span className="text-sm">Settings</span>
+        </button>
+        <button className="w-full flex items-center space-x-3 text-slate-400 hover:bg-slate-800/50 hover:text-white py-2 px-3 rounded-lg transition-all">
           <LogOut size={16} />
-          <span>Log out</span>
+          <span className="text-sm">Log out</span>
         </button>
       </div>
     </aside>
