@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import Sidebar from '../components/Sidebar';
 import ChatWindow from '../components/ChatWindow';
 import ChatInput from '../components/ChatInput';
 import Watchlist from '../components/Watchlist';
 import { chatService } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 interface Message {
   id: number;
@@ -13,10 +15,54 @@ interface Message {
 }
 
 export default function Home() {
+  const router = useRouter();
+  const { isAuthenticated, loading, user, logout } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [sessionId, setSessionId] = useState<string>('');
+
+  useEffect(() => {
+    // Auth guard
+    if (!loading && !isAuthenticated) {
+      router.replace('/login');
+    }
+  }, [loading, isAuthenticated, router]);
+
+  useEffect(() => {
+    // Init or load session id
+    if (typeof window !== 'undefined' && isAuthenticated) {
+      let sid = localStorage.getItem('mp_session_id');
+      if (!sid) {
+        sid = `session-${Date.now()}`;
+        localStorage.setItem('mp_session_id', sid);
+      }
+      setSessionId(sid);
+      
+      // Load history
+      const loadHistory = async () => {
+        try {
+          const history = await chatService.getHistory(sid);
+          const formattedMessages = history.map((h: any, index: number) => ({
+            id: index,
+            text: h.content,
+            isAi: h.role === 'assistant'
+          }));
+          setMessages(formattedMessages);
+        } catch (error) {
+          console.error("Failed to load history:", error);
+        }
+      };
+      loadHistory();
+    }
+  }, [isAuthenticated]);
+
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
+  };
 
   const handleSendMessage = async (text: string) => {
+    if (!sessionId) return;
     // Add user message
     const userMsg: Message = { id: Date.now(), text, isAi: false };
     setMessages(prev => [...prev, userMsg]);
@@ -29,7 +75,7 @@ export default function Home() {
       setMessages(prev => [...prev, aiMsg]);
 
       let fullText = "";
-      for await (const chunk of chatService.streamMessage(text)) {
+      for await (const chunk of chatService.streamMessage(text, sessionId)) {
         fullText += chunk;
         setMessages(prev => 
           prev.map(msg => 
@@ -69,11 +115,16 @@ export default function Home() {
           <div className="flex items-center space-x-4">
             <div className="hidden md:flex flex-col items-end">
               <span className="text-[10px] text-slate-500 font-bold uppercase">Account Status</span>
-              <span className="text-xs font-bold text-fintech-accent">Institutional Pro</span>
+              <span className="text-xs font-bold text-fintech-accent truncate max-w-[150px]">
+                {user?.email || 'Institutional Pro'}
+              </span>
             </div>
-            <div className="w-8 h-8 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center text-[10px] font-bold">
-              MP
-            </div>
+            <button 
+              onClick={handleLogout}
+              className="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 hover:bg-slate-700 transition-colors text-xs font-bold text-slate-300"
+            >
+              Sign Out
+            </button>
           </div>
         </header>
 

@@ -1,7 +1,17 @@
 import React from 'react';
 import { Plus, MessageSquare, BarChart2, Bitcoin, DollarSign, Activity, Settings, LogOut } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { useRouter } from 'next/router';
 
 const Sidebar = () => {
+  const { logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
+  };
+
   return (
     <aside className="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0 bg-fintech-sidebar flex flex-col border-r border-slate-800 text-slate-300">
       <div className="p-6">
@@ -57,7 +67,10 @@ const Sidebar = () => {
           <Settings size={16} />
           <span className="text-sm">Settings</span>
         </button>
-        <button className="w-full flex items-center space-x-3 text-slate-400 hover:bg-slate-800/50 hover:text-white py-2 px-3 rounded-lg transition-all">
+        <button 
+          onClick={handleLogout}
+          className="w-full flex items-center space-x-3 text-slate-400 hover:bg-slate-800/50 hover:text-white py-2 px-3 rounded-lg transition-all"
+        >
           <LogOut size={16} />
           <span className="text-sm">Log out</span>
         </button>

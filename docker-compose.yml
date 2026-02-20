@@ -16,6 +16,6 @@ services:
       - ./frontend:/app
       - /app/node_modules
     environment:
-      - NEXT_PUBLIC_API_URL=https://market-pulse-bk1d.onrender.com/api/v1
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
     depends_on:
       - backend
