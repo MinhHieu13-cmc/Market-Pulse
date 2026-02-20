@@ -41,7 +41,8 @@ class LLMService:
         # If not a recognized container, try to stringify
         return str(data)
 
-    async def get_streaming_response(self, message: str):
+    async def get_streaming_response(self, message: str, user_id: str = None, session_id: str = "default-session", db = None):
+        full_response = ""
         try:
             async for event in self.market_skill.astream_events({"input": message}):
                 kind = event["event"]
@@ -50,35 +51,53 @@ class LLMService:
                     if content:
                         clean_content = self.extract_text(content)
                         if clean_content:
+                            full_response += clean_content
                             yield clean_content
                 elif kind == "on_tool_start":
                     yield f"<thinking>Đang sử dụng công cụ {event['name']}...</thinking>"
                 elif kind == "on_tool_end":
-                    # Optionally yield something when tool finishes
                     pass
+            
+            # Save AI response to DB
+            if db and user_id:
+                from app.models.chat import ChatHistory
+                new_msg = ChatHistory(
+                    user_id=user_id,
+                    session_id=session_id,
+                    role="assistant",
+                    content=full_response
+                )
+                db.add(new_msg)
+                db.commit()
+                
         except Exception as e:
             print(f"DEBUG: ERROR IN STREAMING LLMSERVICE: {str(e)}")
             yield f"Error: {str(e)}"
 
-    async def get_response(self, message: str) -> str:
+    async def get_response(self, message: str, user_id: str = None, session_id: str = "default-session", db = None) -> str:
         try:
-            # For now, we only have one skill, so we use it directly.
-            # In the future, we can add logic to select the appropriate skill.
             response = await self.market_skill.execute({"input": message})
-            
-            # Print for debugging in backend logs
-            print(f"DEBUG: RAW RESPONSE TYPE: {type(response)}")
-            print(f"DEBUG: RAW RESPONSE: {response}")
-
             clean_response = self.extract_text(response)
             
-            # Extra safety: ensure the final result is definitely a string
-            # and not a string representation of a list or dict if something went wrong
             if not isinstance(clean_response, str):
                 clean_response = str(clean_response)
 
             final_text = clean_response.strip()
-            return final_text if final_text else "Không có phản hồi từ AI."
+            result = final_text if final_text else "Không có phản hồi từ AI."
+
+            # Save AI response to DB
+            if db and user_id:
+                from app.models.chat import ChatHistory
+                new_msg = ChatHistory(
+                    user_id=user_id,
+                    session_id=session_id,
+                    role="assistant",
+                    content=result
+                )
+                db.add(new_msg)
+                db.commit()
+
+            return result
         except Exception as e:
             print(f"DEBUG: ERROR IN LLMSERVICE: {str(e)}")
             return f"Error: {str(e)}"

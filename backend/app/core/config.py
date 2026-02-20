@@ -16,6 +16,11 @@ class Settings(BaseSettings):
     GOOGLE_API_KEY: str = ""
     USER_AGENT: str = "MarketPulseApp"
 
+    # Supabase
+    SUPABASE_URL: str = ""
+    SUPABASE_ANON_KEY: str = ""
+    DATABASE_URL: str = ""
+
     class Config:
         case_sensitive = True
         env_file = ".env"
