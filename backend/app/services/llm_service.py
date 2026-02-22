@@ -43,8 +43,15 @@ class LLMService:
 
     async def get_streaming_response(self, message: str, user_id: str = None, session_id: str = "default-session", db = None):
         full_response = ""
+        # Prepare config for tools (especially for RAG tool)
+        config = {
+            "configurable": {
+                "user_id": user_id,
+                "session_id": session_id
+            }
+        }
         try:
-            async for event in self.market_skill.astream_events({"input": message}):
+            async for event in self.market_skill.astream_events({"input": message}, config=config):
                 kind = event["event"]
                 if kind == "on_chat_model_stream":
                     content = event["data"]["chunk"].content
@@ -75,8 +82,15 @@ class LLMService:
             yield f"Error: {str(e)}"
 
     async def get_response(self, message: str, user_id: str = None, session_id: str = "default-session", db = None) -> str:
+        # Prepare config for tools
+        config = {
+            "configurable": {
+                "user_id": user_id,
+                "session_id": session_id
+            }
+        }
         try:
-            response = await self.market_skill.execute({"input": message})
+            response = await self.market_skill.execute({"input": message}, config=config)
             clean_response = self.extract_text(response)
             
             if not isinstance(clean_response, str):

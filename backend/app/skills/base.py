@@ -27,10 +27,10 @@ class BaseSkill(ABC):
             handle_parsing_errors=True
         )
 
-    async def astream_events(self, input_data: dict):
-        async for event in self.executor.astream_events(input_data, version="v2"):
+    async def astream_events(self, input_data: dict, config: dict = None):
+        async for event in self.executor.astream_events(input_data, config=config, version="v2"):
             yield event
 
-    async def execute(self, input_data: dict) -> str:
-        response = await self.executor.ainvoke(input_data)
+    async def execute(self, input_data: dict, config: dict = None) -> str:
+        response = await self.executor.ainvoke(input_data, config=config)
         return response["output"]

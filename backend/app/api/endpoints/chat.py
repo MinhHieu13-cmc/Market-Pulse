@@ -47,3 +47,42 @@ async def get_chat_history(
         ChatHistory.session_id == session_id
     ).order_by(ChatHistory.created_at.asc()).all()
     return history
+
+@router.get("/sessions")
+async def get_sessions(
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    # Lấy các session_id duy nhất và nội dung tin nhắn đầu tiên của user làm tiêu đề
+    from sqlalchemy import func
+    
+    # Subquery để lấy tin nhắn đầu tiên của mỗi session
+    subquery = db.query(
+        ChatHistory.session_id,
+        func.min(ChatHistory.created_at).label("first_msg_time")
+    ).filter(ChatHistory.user_id == current_user.id).group_by(ChatHistory.session_id).subquery()
+
+    sessions = db.query(
+        ChatHistory.session_id,
+        ChatHistory.content,
+        ChatHistory.created_at
+    ).join(
+        subquery, 
+        (ChatHistory.session_id == subquery.c.session_id) & 
+        (ChatHistory.created_at == subquery.c.first_msg_time)
+    ).filter(ChatHistory.role == "user").order_by(ChatHistory.created_at.desc()).all()
+
+    return [{"session_id": s.session_id, "title": s.content[:30] + "..." if len(s.content) > 30 else s.content, "created_at": s.created_at} for s in sessions]
+
+@router.delete("/history/{session_id}")
+async def delete_chat_history(
+    session_id: str,
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    db.query(ChatHistory).filter(
+        ChatHistory.user_id == current_user.id,
+        ChatHistory.session_id == session_id
+    ).delete(synchronize_session=False)
+    db.commit()
+    return {"message": "Session history deleted successfully"}

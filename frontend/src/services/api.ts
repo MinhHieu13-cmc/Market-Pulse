@@ -46,5 +46,42 @@ export const chatService = {
       }
     });
     return response.data;
+  },
+
+  async getSessions() {
+    const token = authService.getToken();
+    const response = await axios.get(`${API_URL}/chat/sessions`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    return response.data;
+  },
+
+  async deleteHistory(sessionId: string) {
+    const token = authService.getToken();
+    const response = await axios.delete(`${API_URL}/chat/history/${sessionId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    return response.data;
+  },
+
+  async uploadDocument(file: File, scope: 'global' | 'session', sessionId?: string) {
+    const token = authService.getToken();
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('scope', scope);
+    if (scope === 'session' && sessionId) {
+      formData.append('session_id', sessionId);
+    }
+
+    const response = await axios.post(`${API_URL}/rag/upload`, formData, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    return response.data;
   }
 };

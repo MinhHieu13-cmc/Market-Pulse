@@ -4,7 +4,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from app.skills.base import BaseSkill
 from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_community.tools.yahoo_finance_news import YahooFinanceNewsTool
-from app.tools import get_stock_price
+from app.tools import get_stock_price, search_financial_documents
 from app.prompts import get_market_analysis_prompt
 
 class MarketAnalysisSkill(BaseSkill):
@@ -12,7 +12,8 @@ class MarketAnalysisSkill(BaseSkill):
         return [
             DuckDuckGoSearchRun(name="duckduckgo_search"),
             YahooFinanceNewsTool(),
-            get_stock_price
+            get_stock_price,
+            search_financial_documents
         ]
 
     def _setup_prompt(self) -> ChatPromptTemplate:
